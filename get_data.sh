@@ -26,13 +26,35 @@ fi
 
 
 
-# get credentials
-echo 'connecting to database'
-read -p 'what is your username?' username
-read -p 'what is the hostname?' hostname
-read -p 'what is the name of the database?' database
+## get credentials
+#echo 'connecting to database'
+#read -p 'what is your username?' username
+#read -p 'what is the hostname?' hostname
+#read -p 'what is the name of the database?' database
+
+# get database credentials
+parse_yaml() {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
+eval "$(parse_yaml config.yaml)"
+echo "Username: $user"
+echo "host: $host"
+echo "database: $database"
 
 echo 'connecting...'
 
-# enter PostgreSQL terminal
-psql -U $username -h $hostname -d $database -f ./sql-code/titanic_tables.sql
+# execute SQL commands in PSQL
+psql -U $user -h $host -d $database -f ./sql-code/titanic_tables.sql
