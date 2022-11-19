@@ -14,7 +14,7 @@ The purpose of this project is to build some fundamental data science skills. Na
   - What model evaluation graphs are the most relevant for this task?
 
 
-### ML Operations
+### ML Operations
 - Interact with data using PostgreSQL
 - Containerise project using Docker
 - Implement logging
