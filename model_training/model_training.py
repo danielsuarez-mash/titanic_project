@@ -69,3 +69,7 @@ class ModelTraining(BuildFeatures):
 
         # export results
         pd.DataFrame(self.gs.cv_results_).to_csv('cross_validation_results.csv')
+
+    def train_voting_clf(self):
+
+
